@@ -11,7 +11,7 @@ import SwiftUI
 struct A01_New_in_SwiftUI_Xcode_16App: App {
     var body: some Scene {
         WindowGroup {
-            
+            GestureRepresentable()
         }
     }
 }
