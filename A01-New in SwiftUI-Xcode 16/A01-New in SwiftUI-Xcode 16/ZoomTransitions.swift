@@ -26,6 +26,10 @@ struct ZoomTransitions: View {
                                 }
                             }
                             .frame(height: 150)
+                            .matchedTransitionSource(id: item.id, in: animation) { config in
+                                config.background(.clear)
+                                    .clipShape(.rect(cornerRadius: 20))
+                            }
                         }
                         .contentShape(.rect(cornerRadius: 20))
                         .buttonStyle(.plain)
@@ -49,6 +53,7 @@ struct ZoomTransitions: View {
                 .padding(20)
                 .navigationTitle(item.title)
                 .navigationBarTitleDisplayMode(.inline)
+                .navigationTransition(.zoom(sourceID: item.id, in: animation))
             }
         }
     }
