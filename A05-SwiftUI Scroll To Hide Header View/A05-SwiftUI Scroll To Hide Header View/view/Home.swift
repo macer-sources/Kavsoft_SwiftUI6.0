@@ -9,6 +9,9 @@ import SwiftUI
 
 struct Home: View {
     @State private var naturalScrollOffset: CGFloat = 0
+    @State private var lastNaturalOffset: CGFloat = 0
+    @State private var headerOffset: CGFloat = 0
+    @State private var isScrollingUp: Bool = false
     var body: some View {
         GeometryReader { proxy in
             let safeArea = proxy.safeAreaInsets
@@ -27,12 +30,34 @@ struct Home: View {
                     .padding(.bottom, 15)
                     .frame(height: headerHeight, alignment: .bottom)
                     .background(.background)
+                    .offset(y: -headerOffset)
             })
             .onScrollGeometryChange(for: CGFloat.self) { proxy in
-                proxy.contentOffset.y
+                let maxHeight = proxy.contentSize.height - proxy.containerSize.height
+                return max(min(proxy.contentOffset.y + headerHeight, maxHeight), 0)
             } action: { oldValue, newValue in
+                let isScrollingUp = oldValue < newValue
+                headerOffset = min(max(newValue - lastNaturalOffset, 0), headerHeight)
+                self.isScrollingUp = isScrollingUp
+                
                 naturalScrollOffset = newValue
             }
+            .onScrollPhaseChange({ oldPhase, newPhase in
+                if !newPhase.isScrolling && (headerOffset != 0 || headerOffset != headerHeight) {
+                    withAnimation(.snappy(duration: 0.25, extraBounce: 0)) {
+                        if headerOffset > (headerHeight * 0.5) && naturalScrollOffset > headerHeight {
+                            headerOffset = headerHeight
+                        } else {
+                            headerOffset = 0
+                        }
+                        
+                        lastNaturalOffset = naturalScrollOffset - headerOffset
+                    }
+                }
+            })
+            .onChange(of: isScrollingUp, { oldValue, newValue in
+                lastNaturalOffset = naturalScrollOffset - headerOffset
+            })
             .ignoresSafeArea(.container, edges: .top)
         }
 
