@@ -6,17 +6,30 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		ABA59CB42CA03BEB00F474C0 /* A08_SwiftUI_Draggable_Tab_barApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABA59CB02CA03BEB00F474C0 /* A08_SwiftUI_Draggable_Tab_barApp.swift */; };
+		ABA59CB52CA03BEB00F474C0 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABA59CB22CA03BEB00F474C0 /* ContentView.swift */; };
+		ABA59CB62CA03BEB00F474C0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = ABA59CB12CA03BEB00F474C0 /* Assets.xcassets */; };
+		ABA59CB72CA03BEB00F474C0 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = ABA59CAE2CA03BEB00F474C0 /* Preview Assets.xcassets */; };
+		ABA59CBB2CA03C0500F474C0 /* TabModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABA59CBA2CA03C0500F474C0 /* TabModel.swift */; };
+		ABA59CBD2CA03C6B00F474C0 /* TabProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABA59CBC2CA03C6B00F474C0 /* TabProperties.swift */; };
+		ABA59CBF2CA03CFF00F474C0 /* Home.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABA59CBE2CA03CFF00F474C0 /* Home.swift */; };
+		ABA59CC12CA03D0500F474C0 /* View+Exts.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABA59CC02CA03D0500F474C0 /* View+Exts.swift */; };
+		ABA59CC32CA03D8B00F474C0 /* CustomTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABA59CC22CA03D8B00F474C0 /* CustomTabBar.swift */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		ABA59C8A2CA036D000F474C0 /* A08-SwiftUI Draggable Tab bar.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "A08-SwiftUI Draggable Tab bar.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		ABA59CAE2CA03BEB00F474C0 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		ABA59CB02CA03BEB00F474C0 /* A08_SwiftUI_Draggable_Tab_barApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = A08_SwiftUI_Draggable_Tab_barApp.swift; sourceTree = "<group>"; };
+		ABA59CB12CA03BEB00F474C0 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		ABA59CB22CA03BEB00F474C0 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		ABA59CBA2CA03C0500F474C0 /* TabModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabModel.swift; sourceTree = "<group>"; };
+		ABA59CBC2CA03C6B00F474C0 /* TabProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabProperties.swift; sourceTree = "<group>"; };
+		ABA59CBE2CA03CFF00F474C0 /* Home.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Home.swift; sourceTree = "<group>"; };
+		ABA59CC02CA03D0500F474C0 /* View+Exts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Exts.swift"; sourceTree = "<group>"; };
+		ABA59CC22CA03D8B00F474C0 /* CustomTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTabBar.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
-
-/* Begin PBXFileSystemSynchronizedRootGroup section */
-		ABA59C8C2CA036D000F474C0 /* A08-SwiftUI Draggable Tab bar */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = "A08-SwiftUI Draggable Tab bar";
-			sourceTree = "<group>";
-		};
-/* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		ABA59C872CA036D000F474C0 /* Frameworks */ = {
@@ -32,7 +45,7 @@
 		ABA59C812CA036D000F474C0 = {
 			isa = PBXGroup;
 			children = (
-				ABA59C8C2CA036D000F474C0 /* A08-SwiftUI Draggable Tab bar */,
+				ABA59CB32CA03BEB00F474C0 /* A08-SwiftUI Draggable Tab bar */,
 				ABA59C8B2CA036D000F474C0 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -43,6 +56,46 @@
 				ABA59C8A2CA036D000F474C0 /* A08-SwiftUI Draggable Tab bar.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		ABA59CAF2CA03BEB00F474C0 /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				ABA59CAE2CA03BEB00F474C0 /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		ABA59CB32CA03BEB00F474C0 /* A08-SwiftUI Draggable Tab bar */ = {
+			isa = PBXGroup;
+			children = (
+				ABA59CB92CA03BFB00F474C0 /* models */,
+				ABA59CB82CA03BF500F474C0 /* views */,
+				ABA59CAF2CA03BEB00F474C0 /* Preview Content */,
+				ABA59CB02CA03BEB00F474C0 /* A08_SwiftUI_Draggable_Tab_barApp.swift */,
+				ABA59CB12CA03BEB00F474C0 /* Assets.xcassets */,
+				ABA59CB22CA03BEB00F474C0 /* ContentView.swift */,
+			);
+			path = "A08-SwiftUI Draggable Tab bar";
+			sourceTree = "<group>";
+		};
+		ABA59CB82CA03BF500F474C0 /* views */ = {
+			isa = PBXGroup;
+			children = (
+				ABA59CBE2CA03CFF00F474C0 /* Home.swift */,
+				ABA59CC02CA03D0500F474C0 /* View+Exts.swift */,
+				ABA59CC22CA03D8B00F474C0 /* CustomTabBar.swift */,
+			);
+			path = views;
+			sourceTree = "<group>";
+		};
+		ABA59CB92CA03BFB00F474C0 /* models */ = {
+			isa = PBXGroup;
+			children = (
+				ABA59CBA2CA03C0500F474C0 /* TabModel.swift */,
+				ABA59CBC2CA03C6B00F474C0 /* TabProperties.swift */,
+			);
+			path = models;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -59,9 +112,6 @@
 			buildRules = (
 			);
 			dependencies = (
-			);
-			fileSystemSynchronizedGroups = (
-				ABA59C8C2CA036D000F474C0 /* A08-SwiftUI Draggable Tab bar */,
 			);
 			name = "A08-SwiftUI Draggable Tab bar";
 			packageProductDependencies = (
@@ -109,6 +159,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				ABA59CB62CA03BEB00F474C0 /* Assets.xcassets in Resources */,
+				ABA59CB72CA03BEB00F474C0 /* Preview Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -119,6 +171,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				ABA59CBB2CA03C0500F474C0 /* TabModel.swift in Sources */,
+				ABA59CB42CA03BEB00F474C0 /* A08_SwiftUI_Draggable_Tab_barApp.swift in Sources */,
+				ABA59CC32CA03D8B00F474C0 /* CustomTabBar.swift in Sources */,
+				ABA59CC12CA03D0500F474C0 /* View+Exts.swift in Sources */,
+				ABA59CBF2CA03CFF00F474C0 /* Home.swift in Sources */,
+				ABA59CBD2CA03C6B00F474C0 /* TabProperties.swift in Sources */,
+				ABA59CB52CA03BEB00F474C0 /* ContentView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
