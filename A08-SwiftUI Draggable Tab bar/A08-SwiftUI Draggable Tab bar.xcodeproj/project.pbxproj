@@ -16,6 +16,7 @@
 		ABA59CBF2CA03CFF00F474C0 /* Home.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABA59CBE2CA03CFF00F474C0 /* Home.swift */; };
 		ABA59CC12CA03D0500F474C0 /* View+Exts.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABA59CC02CA03D0500F474C0 /* View+Exts.swift */; };
 		ABA59CC32CA03D8B00F474C0 /* CustomTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABA59CC22CA03D8B00F474C0 /* CustomTabBar.swift */; };
+		ABA59CC62CA03F9E00F474C0 /* CustomGesture.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABA59CC52CA03F9E00F474C0 /* CustomGesture.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -29,6 +30,7 @@
 		ABA59CBE2CA03CFF00F474C0 /* Home.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Home.swift; sourceTree = "<group>"; };
 		ABA59CC02CA03D0500F474C0 /* View+Exts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Exts.swift"; sourceTree = "<group>"; };
 		ABA59CC22CA03D8B00F474C0 /* CustomTabBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTabBar.swift; sourceTree = "<group>"; };
+		ABA59CC52CA03F9E00F474C0 /* CustomGesture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomGesture.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -69,6 +71,7 @@
 		ABA59CB32CA03BEB00F474C0 /* A08-SwiftUI Draggable Tab bar */ = {
 			isa = PBXGroup;
 			children = (
+				ABA59CC42CA03F8F00F474C0 /* helpers */,
 				ABA59CB92CA03BFB00F474C0 /* models */,
 				ABA59CB82CA03BF500F474C0 /* views */,
 				ABA59CAF2CA03BEB00F474C0 /* Preview Content */,
@@ -96,6 +99,14 @@
 				ABA59CBC2CA03C6B00F474C0 /* TabProperties.swift */,
 			);
 			path = models;
+			sourceTree = "<group>";
+		};
+		ABA59CC42CA03F8F00F474C0 /* helpers */ = {
+			isa = PBXGroup;
+			children = (
+				ABA59CC52CA03F9E00F474C0 /* CustomGesture.swift */,
+			);
+			path = helpers;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -171,6 +182,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				ABA59CC62CA03F9E00F474C0 /* CustomGesture.swift in Sources */,
 				ABA59CBB2CA03C0500F474C0 /* TabModel.swift in Sources */,
 				ABA59CB42CA03BEB00F474C0 /* A08_SwiftUI_Draggable_Tab_barApp.swift in Sources */,
 				ABA59CC32CA03D8B00F474C0 /* CustomTabBar.swift in Sources */,
