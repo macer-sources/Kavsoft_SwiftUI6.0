@@ -23,10 +23,11 @@ var mockItems:[Item] = [
 
 
 struct ContentView: View {
+    @State private var activePage:Int = 0
     var body: some View {
         NavigationStack {
-            VStack {
-                CustomCarousel {
+            VStack(spacing: 15) {
+                CustomCarousel(activeIndex: $activePage) {
                     ForEach(mockItems) { item in
                         RoundedRectangle(cornerRadius: 15)
                             .fill(item.color.gradient)
@@ -34,6 +35,23 @@ struct ContentView: View {
                     }
                 }
                 .frame(height: 220)
+                
+                // custom indicator
+                HStack(spacing: 5) {
+                    ForEach(mockItems.indices, id:\.self) { index  in
+                        Circle()
+                            .fill(activePage == index ? .primary : .secondary)
+                            .frame(width: 8, height: 8)
+                    }
+                }
+                .padding(.vertical, 5)
+                .padding(.horizontal, 10)
+                .background {
+                    Capsule()
+                        .fill(.thinMaterial)
+                }
+                .animation(.snappy, value: activePage)
+                
             }.navigationTitle("Auto scroll carousel")
         }
     }

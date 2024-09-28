@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct CustomCarousel<Content:View>: View {
+    @Binding var activeIndex: Int
     @ViewBuilder var content: Content
     
     // View properties
@@ -75,6 +76,17 @@ struct CustomCarousel<Content:View>: View {
                     
                     if !isScrolling,scrollPosition == collection.count {
                         scrollPosition = 0
+                    }
+                }
+                .onChange(of: scrollPosition) { oldValue, newValue in
+                    if let newValue {
+                        if newValue == -1 {
+                            activeIndex = collection.count - 1
+                        }else if newValue == collection.count {
+                            activeIndex = 0
+                        } else {
+                            activeIndex = max(min(newValue, collection.count - 1), 0)
+                        }
                     }
                 }
             }
