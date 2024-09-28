@@ -13,54 +13,82 @@ struct CustomCarousel<Content:View>: View {
     // View properties
     @State private var scrollPosition: Int?
     @State private var isScrolling:Bool = false
+    @GestureState private var isHoldingScreen: Bool = false
+    @State private var timer = Timer.publish(every: autoScrollDuration, on: .main, in: .default).autoconnect()
     var body: some View {
         GeometryReader { proxy in
             let size = proxy.size
-            
-            ScrollView(.horizontal) {
-                // 确保使用HStack而不是LazyHStack，因为LazyHStack会在视图移动到可视屏幕区域之外时移除视图，从而使scrollPosition无法自动滚动到特定位置。
-                HStack(spacing: 0) {
-                    Group(subviews: content) { collection in
-                        if let lastItem = collection.last {
-                            lastItem.frame(width: size.width, height: size.height)
-                                .id(-1)
-                                .onChange(of: isScrolling) { oldValue, newValue in
-                                    if !newValue,scrollPosition == -1 {
-                                        scrollPosition = collection.count - 1
-                                    }
-                                }
-                        }
-                        ForEach(collection.indices, id:\.self) { index in
-                            collection[index]
-                                .frame(width: size.width, height: size.height)
-                                .id(index)
-                        }
+            Group(subviews: content) { collection in
+                ScrollView(.horizontal) {
+                    // 确保使用HStack而不是LazyHStack，因为LazyHStack会在视图移动到可视屏幕区域之外时移除视图，从而使scrollPosition无法自动滚动到特定位置。
+                    HStack(spacing: 0) {
                         
-                        if let firstItem = collection.first {
-                            firstItem.frame(width: size.width, height: size.height)
-                                .id(collection.count)
-                                .onChange(of: isScrolling) { oldValue, newValue in
-                                    if !newValue,scrollPosition == collection.count {
-                                        scrollPosition = 0
-                                    }
-                                }
-                        }
+                            if let lastItem = collection.last {
+                                lastItem.frame(width: size.width, height: size.height)
+                                    .id(-1)
+                            }
+                            ForEach(collection.indices, id:\.self) { index in
+                                collection[index]
+                                    .frame(width: size.width, height: size.height)
+                                    .id(index)
+                            }
+                            
+                            if let firstItem = collection.first {
+                                firstItem.frame(width: size.width, height: size.height)
+                                    .id(collection.count)
+                            }
+                            
+
+                    }
+                    .scrollTargetLayout() // TODO: 必须加这一句
+                }
+                .scrollPosition(id: $scrollPosition)
+                .scrollIndicators(.hidden)
+                .scrollTargetBehavior(.paging)
+                // 从iOS 18开始，synchronousgesture将与滚动视图同时工作。
+                .simultaneousGesture(DragGesture(minimumDistance: 0).updating($isHoldingScreen, body: { _, out, _ in
+                    out = true
+                }))
+                .onChange(of: isHoldingScreen, { oldValue, newValue in
+                    if newValue {
+                        timer.upstream.connect().cancel()
+                    }else {
+                        timer = Timer.publish(every: Self.autoScrollDuration, on: .main, in: .default).autoconnect()
+                    }
+                })
+                .onReceive(timer, perform: { _ in
+                    // safe check
+                    guard !isHoldingScreen && !isScrolling else {return}
+                    let nextIndex = (scrollPosition ?? 0) + 1
+                    withAnimation(.snappy(duration: 0.25, extraBounce: 0)) {
+                        scrollPosition = (nextIndex == collection.count + 1) ? 0 : nextIndex
                         
                     }
+                })
+
+                .onScrollPhaseChange { oldPhase, newPhase in
+                    isScrolling = newPhase.isScrolling
+                    
+                    if !isScrolling,scrollPosition == -1 {
+                        scrollPosition = collection.count - 1
+                    }
+                    
+                    if !isScrolling,scrollPosition == collection.count {
+                        scrollPosition = 0
+                    }
                 }
-                .scrollTargetLayout() // TODO: 必须加这一句
             }
-            .scrollPosition(id: $scrollPosition)
-            .scrollIndicators(.hidden)
-            .scrollTargetBehavior(.paging)
             .onAppear {
                 scrollPosition = 0
             }
-            .onScrollPhaseChange { oldPhase, newPhase in
-                isScrolling = newPhase.isScrolling
-            }
         }
     }
+    
+    
+    static var autoScrollDuration: CGFloat {
+        return 1.0
+    }
+    
 }
 
 #Preview {
