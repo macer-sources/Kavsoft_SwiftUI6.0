@@ -16,6 +16,10 @@ struct CustomCarousel<Content:View>: View {
     @State private var isScrolling:Bool = false
     @GestureState private var isHoldingScreen: Bool = false
     @State private var timer = Timer.publish(every: autoScrollDuration, on: .main, in: .default).autoconnect()
+    
+    @State private var offsetBasePosition: Int = 0
+    @State private var isSettled: Bool = false
+    
     var body: some View {
         GeometryReader { proxy in
             let size = proxy.size
@@ -54,6 +58,10 @@ struct CustomCarousel<Content:View>: View {
                     if newValue {
                         timer.upstream.connect().cancel()
                     }else {
+                        if isSettled && scrollPosition != offsetBasePosition {
+                            scrollPosition = offsetBasePosition
+                        }
+                        
                         timer = Timer.publish(every: Self.autoScrollDuration, on: .main, in: .default).autoconnect()
                     }
                 })
@@ -74,7 +82,7 @@ struct CustomCarousel<Content:View>: View {
                         scrollPosition = collection.count - 1
                     }
                     
-                    if !isScrolling,scrollPosition == collection.count {
+                    if !isScrolling,scrollPosition == collection.count && !isHoldingScreen {
                         scrollPosition = 0
                     }
                 }
@@ -89,6 +97,19 @@ struct CustomCarousel<Content:View>: View {
                         }
                     }
                 }
+                .onScrollGeometryChange(for: CGFloat.self) {
+                    $0.contentOffset.x
+                } action: { oldValue, newValue in
+                    isSettled = size.width > 0 ? (Int(newValue) % Int(size.width) == 0) : false
+                    let index = size.width > 0 ? Int((newValue / size.width).rounded() - 1) : 0
+                    offsetBasePosition = index
+                    
+                    if isSettled && (scrollPosition != index || index == collection.count) && !isScrolling && !isHoldingScreen {
+                        scrollPosition = index == collection.count ? 0 : index
+                    }
+                    
+                }
+
             }
             .onAppear {
                 scrollPosition = 0
