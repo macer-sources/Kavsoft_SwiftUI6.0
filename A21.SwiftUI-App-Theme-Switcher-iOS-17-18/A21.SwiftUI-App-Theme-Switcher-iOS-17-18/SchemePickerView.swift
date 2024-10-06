@@ -20,7 +20,7 @@ struct SchemePreview: Identifiable {
 }
 
 struct SchemeHostView<Content:View>: View {
-    @ViewBuilder var content: Content
+    private var content: Content
     @AppStorage("ThemeScheme") private var themeScheme: ThemeScheme = .device
     @SceneStorage("ShowScenePickerView") private var showPickerView: Bool = false
     
@@ -31,6 +31,15 @@ struct SchemeHostView<Content:View>: View {
     
     
     @Environment(\.colorScheme) private var colorScheme
+    
+    
+    init(@ViewBuilder content: @escaping () -> Content) {
+        self.content = content()
+        if let window = (UIApplication.shared.connectedScenes.first as? UIWindowScene)?.keyWindow {
+            window.overrideUserInterfaceStyle = themeScheme == .dark ? .dark : (themeScheme == .light ? .light : .unspecified)
+        }
+    }
+    
     var body: some View {
         content
             .sheet(isPresented: $showSheet, onDismiss: {
@@ -77,6 +86,10 @@ struct SchemeHostView<Content:View>: View {
                 let otherSchemePreviewImage = window.subviews.first?.image(size)
                 
                 schemePreviews.append(.init( image: otherSchemePreviewImage, text: colorScheme == .dark ? ThemeScheme.light.rawValue : ThemeScheme.dark.rawValue))
+                
+                if themeScheme == .dark {
+                    schemePreviews = schemePreviews.reversed()
+                }
                 
                 // reseting to it\s defaut style
                 window.overrideUserInterfaceStyle = defautStyle
@@ -152,6 +165,7 @@ struct SchemePickerView: View {
         .onChange(of: themeScheme) { oldValue, newValue in
             localSchemeState = newValue
         }
+        .animation(.easeInOut(duration: 0.25), value: themeScheme)
     }
     
     
@@ -203,8 +217,18 @@ struct SchemePickerView: View {
             }else {
                 themeScheme = preview.first?.text == ThemeScheme.dark.rawValue ? .dark : .light
             }
+            
+            updateScheme()
         }
     }
+    
+    
+    private func updateScheme() {
+        if let window = (UIApplication.shared.connectedScenes.first as? UIWindowScene)?.keyWindow {
+            window.overrideUserInterfaceStyle = themeScheme == .dark ? .dark : (themeScheme == .light ? .light : .unspecified)
+        }
+    }
+    
 }
 
 extension UIView {
