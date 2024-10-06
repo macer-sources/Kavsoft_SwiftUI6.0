@@ -27,6 +27,9 @@ struct SchemeHostView<Content:View>: View {
     @State private var showSheet: Bool = false
     @State private var schemePreviews:[SchemePreview] = []
     
+    @State private var overlayWindow: UIWindow?
+    
+    
     @Environment(\.colorScheme) private var colorScheme
     var body: some View {
         content
@@ -43,6 +46,19 @@ struct SchemeHostView<Content:View>: View {
                     showSheet = false
                 }
             }
+            .onAppear {
+                if let scene = (UIApplication.shared.connectedScenes.first as? UIWindowScene) , overlayWindow == nil {
+                    let window = UIWindow(windowScene: scene)
+                    window.backgroundColor = .clear
+                    window.isHidden = false
+                    window.isUserInteractionEnabled = false
+                    let emptyController = UIViewController()
+                    emptyController.view.backgroundColor = .clear
+                    window.rootViewController = emptyController
+                    
+                    overlayWindow = window
+                }
+            }
     }
     
     // generating scheme previews and then pushing the sheet view
@@ -55,6 +71,8 @@ struct SchemeHostView<Content:View>: View {
                 let defaultSchemePreview = window.subviews.first?.image(size)
                 schemePreviews.append(.init( image: defaultSchemePreview, text: colorScheme == .dark ? ThemeScheme.dark.rawValue : ThemeScheme.light.rawValue))
                 
+                showOverlayImageView(defaultSchemePreview)
+                
                 window.overrideUserInterfaceStyle = colorScheme.oppositeInterfaceStyle
                 let otherSchemePreviewImage = window.subviews.first?.image(size)
                 
@@ -63,11 +81,30 @@ struct SchemeHostView<Content:View>: View {
                 // reseting to it\s defaut style
                 window.overrideUserInterfaceStyle = defautStyle
                 try?  await Task.sleep(for: .seconds(0))
+                
+                removeOverlayImageView()
                 showSheet = true
                 
             }
         }
     }
+    
+    
+    private func showOverlayImageView(_ image: UIImage?) {
+        if overlayWindow?.rootViewController?.view.subviews.isEmpty ?? false  {
+            
+            let imageView = UIImageView(image: image)
+            imageView.contentMode = .scaleAspectFit
+            
+            overlayWindow?.rootViewController?.view.addSubview(imageView)
+        }
+    }
+    private func removeOverlayImageView() {
+        overlayWindow?.rootViewController?.view.subviews.forEach({
+            $0.removeFromSuperview()
+        })
+    }
+    
 }
 
 fileprivate extension ColorScheme {
