@@ -115,7 +115,10 @@ fileprivate extension ColorScheme {
 
 
 struct SchemePickerView: View {
+    @AppStorage("ThemeScheme") private var themeScheme: ThemeScheme = .device
     @Binding var schemePreviews:[SchemePreview]
+    // AppStorage 变更不会更新UI的， 所以需要这个属性
+    @State private var localSchemeState: ThemeScheme = .device
     var body: some View {
         VStack(alignment: .leading, spacing: 15) {
             Text("Appearance")
@@ -126,8 +129,9 @@ struct SchemePickerView: View {
             GeometryReader { _ in
                 HStack(spacing: 0) {
                     ForEach(schemePreviews) { preview in
-                        SchemeCardView(preview)
+                        SchemeCardView([preview])
                     }
+                    SchemeCardView(schemePreviews)
                 }
             }
         }
@@ -145,24 +149,59 @@ struct SchemePickerView: View {
         .padding(.horizontal, 15)
         .presentationDetents([.height(350)])
         .presentationBackground(.clear)
+        .onChange(of: themeScheme) { oldValue, newValue in
+            localSchemeState = newValue
+        }
     }
     
     
     @ViewBuilder
-    private func SchemeCardView(_ preview: SchemePreview) -> some View {
+    private func SchemeCardView(_ preview: [SchemePreview]) -> some View {
         VStack(spacing: 4) {
-            if let image = preview.image {
+            if let image = preview.first?.image {
                 Image(uiImage: image)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
+                    .overlay {
+                        if let secondImage = preview.last?.image, preview.count == 2 {
+                            GeometryReader {
+                                let width = $0.size.width / 2
+                                Image(uiImage: secondImage)
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .mask(alignment: .trailing) {
+                                        Rectangle()
+                                            .frame(width: width)
+                                    }
+                            }
+                        }
+                    }
+                    .clipShape(.rect(cornerRadius: 15))
             }
             
-            Text(preview.text)
+            let text = preview.count == 2 ? "Device" : preview.first?.text ?? ""
+            
+            Text(text)
                 .font(.caption)
                 .foregroundStyle(.gray)
             
             ZStack {
                 Image(systemName: "circle")
+                
+                if localSchemeState.rawValue == text {
+                    Image(systemName: "checkmark.circle.fill")
+                        .foregroundStyle(Color.primary)
+                        .transition(.blurReplace)
+                }
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .contentShape(.rect)
+        .onTapGesture {
+            if preview.count == 2 {
+                themeScheme = .device
+            }else {
+                themeScheme = preview.first?.text == ThemeScheme.dark.rawValue ? .dark : .light
             }
         }
     }
