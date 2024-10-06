@@ -11,7 +11,9 @@ import SwiftUI
 struct A21_SwiftUI_App_Theme_Switcher_iOS_17_18App: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            SchemeHostView {
+                ContentView()
+            }
         }
     }
 }
