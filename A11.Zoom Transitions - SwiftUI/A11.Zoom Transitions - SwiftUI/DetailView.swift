@@ -24,13 +24,8 @@ struct DetailView: View {
             ScrollView(.vertical) {
                 LazyVStack(spacing: 0) {
                     ForEach(sharedModel.videos) { video in
-                        if let thumbnail = video.thumbnail {
-                            Image(uiImage: thumbnail)
-                                .resizable()
-                                .aspectRatio(contentMode: .fill)
-                                .frame(width: size.width, height: size.height)
-                                .clipShape(.rect(cornerRadius: 15))
-                        }
+                        VideoPlayerView(video: video)
+                            .frame(width: size.width, height: size.height)
                     }
                 }
             }
