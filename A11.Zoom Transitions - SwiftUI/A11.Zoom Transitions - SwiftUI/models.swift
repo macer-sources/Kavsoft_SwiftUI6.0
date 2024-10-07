@@ -7,8 +7,8 @@
 
 import SwiftUI
 
-struct Video: Identifiable {
-    let id = UUID().uuidString
+struct Video: Identifiable, Hashable {
+    let id = UUID()
     var fileURL: URL
     var thumbnail: UIImage?
 }

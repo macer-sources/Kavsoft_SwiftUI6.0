@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ContentView: View {
     var sharedModel = SharedModel()
-    
+    @Namespace private var animation
     var body: some View {
         @Bindable var bindings = sharedModel
         GeometryReader {
@@ -21,13 +21,25 @@ struct ContentView: View {
                     ScrollView(.vertical) {
                         LazyVGrid(columns: Array(repeating: GridItem(spacing: 10), count: 2),spacing: 10) {
                             ForEach($bindings.videos) { $video in
-                                CardView(screenSize: screenSize,video: $video)
-                                    .environment(sharedModel)
-                                    .frame(height: screenSize.height * 0.4)
+                                NavigationLink(value: video) {
+                                    CardView(screenSize: screenSize,video: $video)
+                                        .environment(sharedModel)
+                                        .frame(height: screenSize.height * 0.4)
+                                        .matchedTransitionSource(id: video.id, in: animation) { config in
+                                            config.background(.clear)
+                                                .clipShape(.rect(cornerRadius: 15))
+                                        }
+                                }
+                                .buttonStyle(CustomButtonStyle())
                             }
                         }
                         .padding(15)
                     }
+                }
+                .navigationDestination(for: Video.self) { video  in
+                    DetailView(video: video, animation: animation)
+                        .environment(sharedModel)
+                        .toolbarVisibility(.hidden, for: .navigationBar)
                 }
             }
         }
@@ -63,6 +75,15 @@ struct ContentView: View {
     }
 }
 
+
+
+// custom button style
+struct CustomButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+        
+    }
+}
 
 
 struct CardView: View {
