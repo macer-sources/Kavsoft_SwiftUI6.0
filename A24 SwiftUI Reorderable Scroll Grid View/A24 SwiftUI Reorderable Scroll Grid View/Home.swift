@@ -17,8 +17,17 @@ struct Home: View {
     @State private var offset: CGSize = .zero
     // opational fefature
     @State private var hapticsTrigger: Bool = false
+    // scroll properties
+    @State private var scrollPosition: ScrollPosition = .init()
+    @State private var currentScrollOffset: CGFloat = 0
+    @State private var lastActiveScrollOffset: CGFloat = 0
+    @State private var maximumScrollSize: CGFloat = .zero
+    @State private var topRegion: CGRect = .zero
+    @State private var bottomRegion: CGRect = .zero
+    @State private var scrollTimer: Timer?
     var body: some View {
         ScrollView(.vertical) {
+//            LazyVGrid(columns: Array(repeating: GridItem(), count: 2),spacing: 20, content: {
             LazyVStack(spacing: 20, content: {
                 ForEach($controls) { $control in
                     ControlView(control: control)
@@ -38,6 +47,17 @@ struct Home: View {
             })
             .padding(25)
         }
+        .scrollPosition($scrollPosition)
+        .onScrollGeometryChange(for: CGFloat.self, of: {
+            $0.contentOffset.y + $0.contentInsets.top
+        }, action: { _, newValue in
+            currentScrollOffset = newValue
+        })
+        .onScrollGeometryChange(for: CGFloat.self, of: {
+            $0.contentSize.height - $0.containerSize.height
+        }, action: { oldValue, newValue in
+            maximumScrollSize = newValue
+        })
         .scrollIndicators(.hidden)
         .overlay(alignment: .topLeading) {
             if let selectedControl {
@@ -50,7 +70,34 @@ struct Home: View {
                     .transition(.identity)
             }
         }
+        .overlay(alignment: .top, content: {
+            Rectangle()
+                .fill(.clear)
+                .frame(height: 20 + safeArea.top)
+                .onGeometryChange(for: CGRect.self) {
+                    $0.frame(in: .global)
+                } action: { newValue in
+                    topRegion = newValue
+                }
+                .offset(y: -safeArea.top)
+                .allowsTightening(false)
+
+        })
+        .overlay(alignment: .bottom, content: {
+            Rectangle()
+                .fill(.clear)
+                .frame(height: 20 + safeArea.bottom)
+                .onGeometryChange(for: CGRect.self) {
+                    $0.frame(in: .global)
+                } action: { newValue in
+                    bottomRegion = newValue
+                }
+                .offset(y: safeArea.bottom)
+                .allowsTightening(false)
+
+        })
         .sensoryFeedback(.impact, trigger: hapticsTrigger)
+        .allowsHitTesting(selectedControl == nil)
     }
 }
 
@@ -65,6 +112,7 @@ extension Home {
                         if selectedControl == nil {
                             selectedControl = control
                             selectedControlFrame = control.frame
+                            lastActiveScrollOffset = currentScrollOffset
                             hapticsTrigger.toggle()
                             
                             withAnimation(.smooth(duration: 0.25, extraBounce: 0)) {
@@ -75,13 +123,15 @@ extension Home {
                         if let value {
                             offset = value.translation
                             let location = value.location
-                            checkAndSwapItems(location)
+                            checkAndScroll(location)
                         }
                     }
                 default: ()
                 }
             }
             .onEnded { _ in
+                scrollTimer?.invalidate()
+                
                 withAnimation(.snappy(duration: 0.25, extraBounce: 0),completionCriteria: .logicallyComplete) {
                     // updating control frame with latest update
                     selectedControl?.frame = selectedControlFrame
@@ -90,11 +140,37 @@ extension Home {
                     offset = .zero
                 } completion: {
                     selectedControl = nil
+                    scrollTimer = nil
+                    lastActiveScrollOffset = 0
                 }
 
             }
     }
     
+    
+    private func checkAndScroll(_ location: CGPoint) {
+        let topStatus = topRegion.contains(location)
+        let bottomStatus = bottomRegion.contains(location)
+        if topStatus || bottomStatus {
+            guard scrollTimer == nil else {return}
+            scrollTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true, block: { _ in
+                if topStatus {
+                    lastActiveScrollOffset = max(lastActiveScrollOffset - 10, 0)
+                } else {
+                    lastActiveScrollOffset = min(lastActiveScrollOffset + 10, maximumScrollSize)
+                }
+                scrollPosition.scrollTo(y: lastActiveScrollOffset)
+                // swapping item if it falls on any item
+                checkAndSwapItems(location)
+            })
+        } else {
+            // remove timer
+            scrollTimer?.invalidate()
+            scrollTimer = nil
+            
+            checkAndSwapItems(location)
+        }
+    }
     
     private func checkAndSwapItems(_ location: CGPoint) {
         if let currentIndex = controls.firstIndex(where: {$0.id == selectedControl?.id}),
