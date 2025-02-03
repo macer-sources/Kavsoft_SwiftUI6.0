@@ -30,6 +30,7 @@ enum Orientation: String, CaseIterable {
 
 struct ContentView: View {
     @State private var orientation: Orientation = .portrait
+    @State private var showFullScreenCover: Bool = false
     var body: some View {
         NavigationStack {
             List {
@@ -44,10 +45,78 @@ struct ContentView: View {
                         modifyOrientation(newValue.mask)
                     }
                 }
+                
+                
+                Section("Actions") {
+                    NavigationLink("Detail View") {
+                        DetailView(userSelection: orientation)
+                    }
+                    
+                    Button("Show Full Screen Cover") {
+                        modifyOrientation(.landscapeRight)
+                        // The reason I'm using DispatchQueue is to have animation for the full-screen cover as well
+                        DispatchQueue.main.async {
+                            showFullScreenCover.toggle()
+                        }
+                    }
+                }
+                
+                
             }
+        }
+        .navigationTitle("Manual Orientation")
+        .fullScreenCover(isPresented: $showFullScreenCover) {
+            Rectangle()
+                .fill(.red.gradient)
+                .overlay {
+                    Text("Hello From Full Screen Cover!")
+                }
+                .ignoresSafeArea()
+                .overlay(alignment: .topTrailing) {
+                    Button("Close") {
+                        modifyOrientation(orientation.mask)
+                        showFullScreenCover.toggle()
+                    }
+                    .padding(15)
+                }
         }
     }
 }
+
+
+struct DetailView: View {
+    var userSelection: Orientation
+    @Environment(\.dismiss) private var dismiss
+    @State private var isRotated: Bool = false
+    var body: some View {
+        NavigationLink("Sub-Detail View"){
+            Text("Hello From Detail View!")
+                .onAppear {
+                    modifyOrientation(.portrait)
+                }.onDisappear {
+                    modifyOrientation(.landscapeLeft)
+                }
+        }
+            .onAppear {
+                guard !isRotated else { return }
+                modifyOrientation(.landscapeLeft)
+                isRotated = true
+            }
+            .navigationBarBackButtonHidden()
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button("Back") {
+                        modifyOrientation(userSelection.mask)
+                        DispatchQueue.main.async {
+                            dismiss()
+                        }
+                    }
+                }
+            }
+    }
+}
+
+
 
 #Preview {
     ContentView()
