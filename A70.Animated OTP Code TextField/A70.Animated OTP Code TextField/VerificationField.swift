@@ -41,17 +41,27 @@ struct VerificationField: View {
     // view properties
     @State private var state: TypingState = .typing
     @FocusState private var isActive: Bool
+    @State private var invalidTrigger: Bool = false
     var body: some View {
         HStack(spacing: style == .roundedBorder ? 6 : 10) {
             ForEach(0..<type.rawValue, id:\.self) {index in
                 CharacterView(index)
             }
         }
+        .animation(.easeInOut(duration: 0.2), value: value)
+        .animation(.easeInOut(duration: 0.2), value: isActive)
         .compositingGroup()
+        // invilid phase animator
+        .phaseAnimator([0,10,-10,-5,5,0], trigger: invalidTrigger, content: { content, offset in
+            content.offset(x: offset)
+        }, animation: { _ in
+                .linear(duration: 0.06)
+        })
         .background {
             TextField("", text: $value)
                 .focused($isActive)
                 .keyboardType(.numberPad)
+                .textContentType(.oneTimeCode)
                 .mask(alignment: .trailing) {
                     Rectangle()
                         .frame(width: 1, height: 1)
@@ -69,6 +79,18 @@ struct VerificationField: View {
             Task { @MainActor in
                 // for validation check
                 state = await onChange(value)
+                if state == .invalid {
+                    invalidTrigger.toggle()
+                }
+            }
+        }
+        .toolbar {
+            ToolbarItem(placement: .keyboard) {
+                Button("Done") {
+                    isActive = false
+                }
+                .tint(Color.primary)
+                .frame(maxWidth: .infinity, alignment: .trailing)
             }
         }
     }
