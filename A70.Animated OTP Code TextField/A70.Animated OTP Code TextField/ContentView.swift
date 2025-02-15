@@ -8,14 +8,17 @@
 import SwiftUI
 
 struct ContentView: View {
+    @State private var code: String = ""
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        VerificationField(type: .six, value: $code) { result in
+            if result.count < 6 {
+                return .typing
+            } else if result == "12345" {
+                return .valid
+            } else {
+                return .invalid
+            }
         }
-        .padding()
     }
 }
 
